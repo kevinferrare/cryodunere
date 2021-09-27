@@ -1,4 +1,4 @@
-package cryodunere.mainexe.introvideo;
+package cryodunere.mainexe.scriptedscene;
 
 import spice86.emulator.machine.Machine;
 import spice86.emulator.reverseengineer.MemoryBasedDataStructureWithDsBaseAddress;

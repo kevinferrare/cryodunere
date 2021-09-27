@@ -1,4 +1,4 @@
-package cryodunere.mainexe.introvideo;
+package cryodunere.mainexe.scriptedscene;
 
 import java.util.Map;
 

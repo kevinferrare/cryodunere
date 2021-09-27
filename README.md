@@ -56,6 +56,8 @@ The jar file will be in target folder
 
 ![](doc/cryodune_worm.png)
 
+![](doc/cryodune_chani.PNG)
+
 ![](doc/cryodune_send_spice.png)
 
 ![](doc/cryodune_harkonen.PNG)
