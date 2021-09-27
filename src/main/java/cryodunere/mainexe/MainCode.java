@@ -37,15 +37,15 @@ public class MainCode extends JavaOverrideHelper {
     defineFunction(segment, 0xD454, "dispatcherHelperDeterminesWhereToJump");
     defineFunction(segment, 0x4AC4, "setUnknown11CATo0", this::setUnknown11CATo0_0x1ED_0x4AC4_0x6994);
     defineFunction(segment, 0x4ACA, "setUnknown11CATo1", this::setUnknown11CATo1_0x1ED_0x4ACA_0x699A);
+    defineFunction(segment, 0x5BA8, "memCopy8Bytes", this::memCopy8Bytes_0x1ED_0x5BA8_0x7A78);
     defineFunction(segment, 0xABCC, "isUnknownDC2BZero", this::isUnknownDC2BZero_0x1ED_0xABCC_0xCA9C);
     defineFunction(segment, 0xAC30, "soundDriverUnknownClearAL", this::soundDriverUnknownClearAL_0x1ED_0xAC30_0xCB00);
     defineFunction(segment, 0xAE28, "isUnknownDBC80x100", this::isUnknownDBC80x100_0x1ED_0xAE28_0xCCF8);
     defineFunction(segment, 0xB2BE, "setUnknown2788To0", this::setUnknown2788To0_0x1ED_0xB2BE_0xD18E);
-    defineFunction(segment, 0xCA59, "videoPlayRelated", this::videoPlayRelated_0x1ED_0xCA59_0xE929);
     defineFunction(segment, 0xD917, "noOp", this::noOp_0x1ED_0xD917_0xF7E7);
     defineFunction(segment, 0xDB44, "shlDXAndCXByAH", this::shlDXAndCXByAH_0x1ED_0xDB44_0xFA14);
+    defineFunction(segment, 0xE851, "checkUnknown39B9", this::checkUnknown39B9_0x1ED_0xE851_0x10721);
     defineFunction(segment, 0xE26F, "noOp", this::noOp_0x1ED_0xE26F_0x1013F);
-
   }
 
   // sets the gfx offset to 0
@@ -115,6 +115,13 @@ public class MainCode extends JavaOverrideHelper {
     return memCopy8BytesDsSIToDsDi_0x1ED_0x5B99_0x7A69();
   }
 
+  public Runnable memCopy8Bytes_0x1ED_0x5BA8_0x7A78() {
+    // Called on dialogue, screen change, intro demo and globe
+    state.setSI(0x1470);
+    state.setDI(0xD834);
+    return memCopy8BytesDsSIToDsDi_0x1ED_0x5B99_0x7A69();
+  }
+
   /**
    * Purpose unknown but called all the times and always 0, maybe something related to video frames?<br/>
    * When ZF is forced to false, freezes the game in indoor room moves but not in the desert or in other screens.<br/>
@@ -155,14 +162,6 @@ public class MainCode extends JavaOverrideHelper {
     return nearRet();
   }
 
-  public Runnable videoPlayRelated_0x1ED_0xCA59_0xE929() {
-    // seems to have no impact what so ever is done here. Only executed during videos
-    int value = globalsOnDs.getCE7AVideoPlayRelatedIndex();
-    globalsOnDs.setDC22VideoPlayRelatedIndex(value);
-    LOGGER.debug("videoPlayRelated value:{}", value);
-    return nearRet();
-  }
-
   public Runnable noOp_0x1ED_0xD917_0xF7E7() {
     // called after first globe display
     return nearRet();
@@ -176,6 +175,14 @@ public class MainCode extends JavaOverrideHelper {
     }
     state.setCX(state.getCX() << shiftCount);
     state.setDX(state.getDX() << shiftCount);
+    return nearRet();
+  }
+
+  public Runnable checkUnknown39B9_0x1ED_0xE851_0x10721() {
+    // Game stops if carry flag is unset
+    int value = globalsOnDs.get39B9();
+    value += 0x2F13;
+    cpu.getAlu().sub16(value, globalsOnDs.getCE68());
     return nearRet();
   }
 

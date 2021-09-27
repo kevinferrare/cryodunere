@@ -20,11 +20,43 @@ public class DisplayGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddres
     return this.getUint16(0xDBD8);
   }
 
-  public int getBufferSegmentDBDA() {
+  public int getCurentVideoBufferSegmentDBDA() {
     return this.getUint16(0xDBDA);
   }
 
-  public void setBufferSegmentDBDA(int value) {
+  public void setCurrentVideoBufferSegmentDBDA(int value) {
     this.setUint16(0xDBDA, value);
+  }
+
+  public int getCharacterXCoordD82C() {
+    return this.getUint16(0xD82C);
+  }
+
+  public int getCharacterYCoordD82E() {
+    return this.getUint16(0xD82E);
+  }
+
+  public int get1C06() {
+    return this.getUint16(0x1C06);
+  }
+
+  public void set1C06(int value) {
+    this.setUint16(0x1C06, value);
+  }
+
+  public int get1BF8() {
+    return this.getUint16(0x1BF8);
+  }
+
+  public void set1BF8(int value) {
+    this.setUint16(0x1BF8, value);
+  }
+
+  public int get1BEA() {
+    return this.getUint16(0x1BEA);
+  }
+
+  public void set1BEA(int value) {
+    this.setUint16(0x1BEA, value);
   }
 }

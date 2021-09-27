@@ -129,9 +129,7 @@ public class VgaDriver extends JavaOverrideHelper {
     // 26D77
     int address = MemoryUtils.toPhysicalAddress(state.getES(), 0);
     LOGGER.debug("fillWithZeroFor64000AtES address:{}", address);
-    for (int i = 0; i < 64000; i++) {
-      memory.setUint8(address + i, 0);
-    }
+    memory.memset(address, 0, 64000);
     return farRet();
   }
 

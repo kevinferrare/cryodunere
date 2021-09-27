@@ -47,16 +47,11 @@ public class MainGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress {
     return this.getUint16(0xDBC8);
   }
 
-  public int getCE7AVideoPlayRelatedIndex() {
-    return this.getUint16(0xCE7A);
+  public int get39B9() {
+    return this.getUint16(0x39B9);
   }
 
-  public void setCE7AVideoPlayRelatedIndex(int value) {
-    this.setUint16(0xCE7A, value);
+  public int getCE68() {
+    return this.getUint16(0xCE68);
   }
-
-  public void setDC22VideoPlayRelatedIndex(int value) {
-    this.setUint16(0xDC22, value);
-  }
-
 }

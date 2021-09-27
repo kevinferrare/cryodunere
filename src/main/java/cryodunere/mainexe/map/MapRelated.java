@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
+import spice86.emulator.memory.MemoryUtils;
 import spice86.emulator.memory.SegmentedAddress;
 import spice86.emulator.reverseengineer.JavaOverrideHelper;
 import spice86.utils.ConvertUtils;
@@ -33,6 +34,15 @@ public class MapRelated extends JavaOverrideHelper {
         this::setMapClickHandlerAddressFromAx_0x1ED_0xD95E_0xF82E);
     defineFunction(segment, 0xDAA3, "initMapCursorTypeDC58To0", this::initMapCursorTypeDC58To0_0x1ED_0xDAA3_0xF973);
     defineFunction(segment, 0xDAAA, "setSiToMapCursorTypeDC58", this::setSiToMapCursorTypeDC58_0x1ED_0xDAAA_0xF97A);
+    defineFunction(segment, 0x5B96, "unknownMemcopy", this::unknownMemcopy_0x1ED_0x5B96_0x7A66);
+  }
+
+  public Runnable unknownMemcopy_0x1ED_0x5B96_0x7A66() {
+    // Called on map display / move, data to be copied never seems to change.
+    int sourceAddress = MemoryUtils.toPhysicalAddress(state.getDS(), 0x46e3);
+    int destinationAddress = MemoryUtils.toPhysicalAddress(state.getDS(), state.getDI());
+    memory.memCopy(sourceAddress, destinationAddress, 4 * 2);
+    return nearRet();
   }
 
   public Runnable setMapClickHandlerAddressToInGame_0x1ED_0xD95B_0xF82B() {
