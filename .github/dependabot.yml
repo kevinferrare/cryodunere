@@ -5,7 +5,7 @@ registries:
     type: maven-repository
     url: https://maven.pkg.github.com/kevinferrare/spice86
     username: kevinferrare
-    password: ${{secrets.GITHUB_TOKEN}}
+    password: ${{secrets.SPICE86_READ_TOKEN}}
 updates:
 # Maintain dependencies for GitHub Actions
 - package-ecosystem: "github-actions"
