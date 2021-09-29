@@ -59,11 +59,10 @@ jobs:
       uses: whelk-io/maven-settings-xml-action@v18
       with:
         output_file: ./spice86-maven-settings.xml
-        servers: '[{ "id": "github-spice86", "username": "kevinferrare", "password": "${{secrets.SPICE86_READ_TOKEN}}" }]'
+        servers: '[{ "id": "github-spice86", "username": "kevinferrare", "password": "${{secrets.GITHUB_TOKEN}}" }]'
 
     - name: Build Maven
       env:
-        VERSION: ${{ steps.versioning.outputs.new_tag }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         mvn -B --settings ./spice86-maven-settings.xml clean install

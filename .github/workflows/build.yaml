@@ -35,6 +35,7 @@ jobs:
         DRY_RUN: false
 
     # Setup github maven for spice86 dependency read (need a different entry in settings.xml for that ...)
+    # Need a token that is not GITHUB_TOKEN for dependabot
     - name: Setup custom settings.xml
       uses: whelk-io/maven-settings-xml-action@v18
       with:
