@@ -1,0 +1,21 @@
+version: 2
+updates:
+# Maintain dependencies for GitHub Actions
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "daily"
+# Maintain dependencies for Maven
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+    time: "04:00"
+  open-pull-requests-limit: 10
+registries:
+# Access to spice86 dependency on github maven repo. Need token to access it ...
+  maven-artifactory:
+    type: maven-repository
+    url: https://maven.pkg.github.com/kevinferrare/spice86
+    username: kevinferrare
+    password: ${{secrets.GITHUB_TOKEN}}
