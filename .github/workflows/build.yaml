@@ -37,7 +37,7 @@ jobs:
     # Setup github maven for spice86 dependency read (need a different entry in settings.xml for that ...)
     # Need a token that is not GITHUB_TOKEN for dependabot
     - name: Setup custom settings.xml
-      uses: whelk-io/maven-settings-xml-action@v18
+      uses: whelk-io/maven-settings-xml-action@v20
       with:
         output_file: ./spice86-maven-settings.xml
         servers: '[{ "id": "github-spice86", "username": "kevinferrare", "password": "${{secrets.GITHUB_TOKEN}}" }]'
