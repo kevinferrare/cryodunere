@@ -86,7 +86,7 @@
     <dependency>
       <groupId>com.kevinferrare</groupId>
       <artifactId>spice86</artifactId>
-      <version>1.15.0</version>
+      <version>1.16.0</version>
     </dependency>
   </dependencies>
 </project>
