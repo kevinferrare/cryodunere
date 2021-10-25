@@ -123,7 +123,7 @@ public class MainCode extends JavaOverrideHelper {
   }
 
   /**
-   * Purpose unknown but called all the times and always 0, maybe something related to video frames?<br/>
+   * Purpose unknown but called all the times and always 0 except when clicking on videos in the book, maybe something related to video frames?<br/>
    * When ZF is forced to false, freezes the game in indoor room moves but not in the desert or in other screens.<br/>
    * Outputs:
    * <ul>
@@ -132,9 +132,6 @@ public class MainCode extends JavaOverrideHelper {
    */
   public Runnable isUnknownDC2BZero_0x1ED_0xABCC_0xCA9C() {
     state.setZeroFlag(globalsOnDs.getDC2BUnknown() == 0);
-    if (!state.getZeroFlag()) {
-      this.failAsUntested("isUnknownDC2BZero was called with a non zero value: " + globalsOnDs.getDC2BUnknown());
-    }
     return nearRet();
   }
 

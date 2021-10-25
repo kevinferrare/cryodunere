@@ -22,6 +22,14 @@ public class Video extends JavaOverrideHelper {
     this.globalsOnDs = new VideoGlobalsOnDs(machine);
     defineFunction(segment, 0xC921, "read33A3WithAxOffset", this::read33A3WithAxOffset_0x1ED_0xC921_0xE7F1);
     defineFunction(segment, 0xCA59, "videoPlayRelated", this::videoPlayRelated_0x1ED_0xCA59_0xE929);
+    defineFunction(segment, 0xCC85, "isLastFrame", this::isLastFrame_0x1ED_0xCC85_0xEB55);
+  }
+
+  public Runnable isLastFrame_0x1ED_0xCC85_0xEB55() {
+    int value = globalsOnDs.getDBE7();
+    LOGGER.debug("DBE7={}", value);
+    state.setZeroFlag(value == 0 || value == 1);
+    return nearRet();
   }
 
   /**

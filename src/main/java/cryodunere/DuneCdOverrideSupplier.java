@@ -6,6 +6,7 @@ import java.util.Map;
 import cryodunere.mainexe.MainCode;
 import cryodunere.mainexe.dialogues.Dialogues;
 import cryodunere.mainexe.display.Display;
+import cryodunere.mainexe.init.Init;
 import cryodunere.mainexe.map.MapRelated;
 import cryodunere.mainexe.menu.Menu;
 import cryodunere.mainexe.scriptedscene.ScriptedScene;
@@ -36,6 +37,7 @@ public class DuneCdOverrideSupplier implements OverrideSupplier {
     new Dialogues(res, programStartSegment, machine);
     new Display(res, programStartSegment, machine, vgaDriver);
     new Video(res, programStartSegment, machine);
+    new Init(res, programStartSegment, machine);
     return res;
   }
 

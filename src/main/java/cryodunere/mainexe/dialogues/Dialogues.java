@@ -2,6 +2,9 @@ package cryodunere.mainexe.dialogues;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.SegmentedAddress;
@@ -10,6 +13,8 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
 public class Dialogues extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Dialogues.class);
+
   private DialoguesGlobalsOnDs globalsOnDs;
 
   public Dialogues(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
@@ -18,7 +23,14 @@ public class Dialogues extends JavaOverrideHelper {
 
     defineFunction(segment, 0xA1E8, "incUnknown47A8", this::incUnknown47A8_0x1ED_0xA1E8_0xC0B8);
     defineFunction(segment, 0xA8B1, "unknown", this::unknown_0x1ED_0xA8B1_0xC781);
+    defineFunction(segment, 0xC85B, "initDialogue", this::initDialogue_0x1ED_0xC85B_0xE72B);
+  }
 
+  public Runnable initDialogue_0x1ED_0xC85B_0xE72B() {
+    int value = this.globalsOnDs.getCE7A();
+    this.globalsOnDs.set476E(value);
+    this.globalsOnDs.setTimeBetweenFaceZooms4772(0x1770);
+    return nearRet();
   }
 
   public Runnable incUnknown47A8_0x1ED_0xA1E8_0xC0B8() {

@@ -16,6 +16,11 @@ public class VideoGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress 
     this.setUint16(0xCE7A, value);
   }
 
+  // 0 or 1 for regular frames, 3 for the last one?
+  public int getDBE7() {
+    return this.getUint8(0xDBE7);
+  }
+
   public void setDC22VideoPlayRelatedIndex(int value) {
     this.setUint16(0xDC22, value);
   }

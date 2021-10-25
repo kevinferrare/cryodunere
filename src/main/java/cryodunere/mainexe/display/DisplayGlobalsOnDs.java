@@ -36,6 +36,14 @@ public class DisplayGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddres
     return this.getUint16(0xD82E);
   }
 
+  public void setFontRelated2518(int value) {
+    this.setUint16(0x2518, value);
+  }
+
+  public void set47A0(int value) {
+    this.setUint16(0x47A0, value);
+  }
+
   public int get1C06() {
     return this.getUint16(0x1C06);
   }

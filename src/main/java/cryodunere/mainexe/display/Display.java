@@ -23,7 +23,7 @@ public class Display extends JavaOverrideHelper {
     super(functionInformations, "display", machine);
     this.vgaDriver = vgaDriver;
     globalsOnDs = new DisplayGlobalsOnDs(machine);
-    defineFunction(segment, 0x98F5, "clearUnknownValues", this::clearUnknownValues_0x1ED_0x98F5_0xB7C5);
+    defineFunction(segment, 0x98F5, "clearUnknownValuesAndAX", this::clearUnknownValuesAndAX_0x1ED_0x98F5_0xB7C5);
     defineFunction(segment, 0xC07C, "setVideoBufferSegmentDBD6", this::setVideoBufferSegmentDBD6_0x1ED_0xC07C_0xDF4C);
     defineFunction(segment, 0xC085, "setDialogueVideoBufferSegmentDC32",
         this::setDialogueVideoBufferSegmentDC32_0x1ED_0xC085_0xDF55);
@@ -31,18 +31,23 @@ public class Display extends JavaOverrideHelper {
         this::setTextVideoBufferSegmentDBD8_0x1ED_0xC08E_0xDF5E);
     defineFunction(segment, 0xC0AD, "clearCurrentVideoBuffer", this::clearCurrentVideoBuffer_0x1ED_0xC0AD_0xDF7D);
     defineFunction(segment, 0xD05F, "getCharacterCoordsXY", this::getCharacterCoordsXY_0x1ED_0xD05F_0xEF2F);
+    defineFunction(segment, 0xD068, "setFontToIntro", this::setFontToIntro_0x1ED_0xD068_0xEF38);
+    defineFunction(segment, 0xD075, "setFontToMenu", this::setFontToMenu_0x1ED_0xD075_0xEF45);
+    defineFunction(segment, 0xD082, "setFontToBook", this::setFontToBook_0x1ED_0xD082_0xEF52);
   }
 
-  public Runnable clearUnknownValues_0x1ED_0x98F5_0xB7C5() {
+  public Runnable clearUnknownValuesAndAX_0x1ED_0x98F5_0xB7C5() {
     // Called after screen change (video, room, dialogue, map ...).
     // When set to 255, cannot enter orni and enter palace instead
-    LOGGER.debug("Before: 1C06:{}, 1BF8:{}, 1BEA:{}", globalsOnDs.get1C06(), globalsOnDs.get1BF8(),
+    LOGGER.info("Before: 1C06:{}, 1BF8:{}, 1BEA:{}", globalsOnDs.get1C06(), globalsOnDs.get1BF8(),
         globalsOnDs.get1BEA());
     globalsOnDs.set1C06(0);
     // 128 after end of dialogue if character is in the room
     globalsOnDs.set1BF8(0);
     // 128 after end of dialogue
     globalsOnDs.set1BEA(0);
+    // If not done, book videos will show a character on screen instead
+    state.setAX(0);
     return nearRet();
   }
 
@@ -90,6 +95,27 @@ public class Display extends JavaOverrideHelper {
     state.setDX(x);
     state.setBX(y);
     LOGGER.debug("getCharacterCoordsXY x:{} y:{}", state.getDX(), state.getBX());
+    return nearRet();
+  }
+
+  // intro and map fonts
+  public Runnable setFontToIntro_0x1ED_0xD068_0xEF38() {
+    globalsOnDs.setFontRelated2518(0xD096);
+    globalsOnDs.set47A0(0xCEEC);
+    return nearRet();
+  }
+
+  // menu fonts related
+  public Runnable setFontToMenu_0x1ED_0xD075_0xEF45() {
+    globalsOnDs.setFontRelated2518(0xD12F);
+    globalsOnDs.set47A0(0xCF6C);
+    return nearRet();
+  }
+
+  // book fonts related
+  public Runnable setFontToBook_0x1ED_0xD082_0xEF52() {
+    globalsOnDs.setFontRelated2518(0xD0FF);
+    globalsOnDs.set47A0(0xCEEC);
     return nearRet();
   }
 }
