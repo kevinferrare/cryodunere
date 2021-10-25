@@ -43,7 +43,7 @@ public class VgaDriver extends JavaOverrideHelper {
     defineFunction(baseSegment, 0x13C, "noOp", this::noOp_0x2538_0x13C_0x254BC);
     defineFunction(baseSegment, 0x163, "updateVgaOffset01A3FromLineNumberAsAx",
         this::updateVgaOffset01A3FromLineNumberAsAx_0x2538_0x163_0x254E3);
-    defineFunction(baseSegment, 0x16C, "generateFloor", this::generateFloorOutBP_0x2538_0x16C_0x254EC);
+    defineFunction(baseSegment, 0x16C, "generateTextureOutBP", this::generateTextureOutBP_0x2538_0x16C_0x254EC);
     defineFunction(baseSegment, 0x9B8, "waitForRetrace", this::waitForRetrace_0x2538_0x9B8_0x25D38);
     defineFunction(baseSegment, 0xA21, "setBxCxPaletteRelated", this::setBxCxPaletteRelated_0x2538_0xA21_0x25DA1);
     defineFunction(baseSegment, 0xA58, "copyCsRamB5FToB2F", this::copyCsRamB5FToB2F_0x2538_0xA58_0x25DD8);
@@ -90,23 +90,18 @@ public class VgaDriver extends JavaOverrideHelper {
   public Runnable restoreImageUnderMouseCursor_0x2538_0x10C_0x2548C() {
     // 26CC0
     int mouseCursorAddressInVram = this.vgaDriverGlobals.getMouseCursorAddressInVram018A();
-    int columnsOfMouseCursorCount = this.vgaDriverGlobals.getColumnsOfMouseCursorCount018C();
-    int linesOfMouseCursorCount = this.vgaDriverGlobals.getLinesOfMouseCursorCount018E();
+    int columns = this.vgaDriverGlobals.getColumnsOfMouseCursorCount018C();
+    int lines = this.vgaDriverGlobals.getLinesOfMouseCursorCount018E();
     LOGGER.debug(
-        "restoreImageUnderMouseCursor mouseCursorAddressInVram:{},columnsOfMouseCursorCount:{},linesOfMouseCursorCount:{}",
-        mouseCursorAddressInVram, columnsOfMouseCursorCount, linesOfMouseCursorCount);
-    int segment = MemoryMap.GRAPHIC_VIDEO_MEMORY_SEGMENT;
-    int mouseCursorPreviousImage = IMAGE_UNDER_MOUSE_CURSOR_START;
-    do {
-      for (int i = 0; i < columnsOfMouseCursorCount; i++) {
-        int sourceAddress = MemoryUtils.toPhysicalAddress(segment, mouseCursorPreviousImage++);
-        int destinationAddress = MemoryUtils.toPhysicalAddress(segment, mouseCursorAddressInVram + i);
-        int value = memory.getUint8(sourceAddress);
-        memory.setUint8(destinationAddress, value);
-      }
-      mouseCursorAddressInVram += 320;
-      linesOfMouseCursorCount--;
-    } while (linesOfMouseCursorCount != 0);
+        "restoreImageUnderMouseCursor mouseCursorAddressInVram:{},columns:{},lines:{}",
+        mouseCursorAddressInVram, columns, lines);
+    int sourceAddress =
+        MemoryUtils.toPhysicalAddress(MemoryMap.GRAPHIC_VIDEO_MEMORY_SEGMENT, IMAGE_UNDER_MOUSE_CURSOR_START);
+    int destinationAddress =
+        MemoryUtils.toPhysicalAddress(MemoryMap.GRAPHIC_VIDEO_MEMORY_SEGMENT, mouseCursorAddressInVram);
+    for (int i = 0; i < lines; i++) {
+      memory.memCopy(sourceAddress + columns * i, destinationAddress + 320 * i, columns);
+    }
     return farRet();
   }
 
@@ -210,7 +205,7 @@ public class VgaDriver extends JavaOverrideHelper {
    * <li>BP with last value of noise</li>
    * </ul>
    */
-  public Runnable generateFloorOutBP_0x2538_0x16C_0x254EC() {
+  public Runnable generateTextureOutBP_0x2538_0x16C_0x254EC() {
     // 28D69, 30 lines in ghidra
     int destinationBaseAddress = MemoryUtils.toPhysicalAddress(state.getES(), 0);
     int initialColor = state.getAX();
@@ -336,10 +331,15 @@ public class VgaDriver extends JavaOverrideHelper {
   }
 
   /**
-   * Input mouseY=BX, mouseX=DX, output DI. Impacts layout somehow?<br/>
-   * x:0,y:0,offset:0,res:0<br/>
-   * x:0,y:1,offset:0,res:320<br/>
-   * x:0,y:2,offset:0,res:640<br/>
+   * Converts x/y coordinates to a linear index to access vram or video buffers. Lines are hardcoded to 320 pixels.
+   * Inputs:
+   * <ul>
+   * <li>DX / BX: x/y coordinates</li>
+   * </ul>
+   * Output:
+   * <ul>
+   * <li>DI contains the converted linear index</li>
+   * </ul>
    */
   private Runnable setDiFromXYCordsDxBx_0x2538_0xC10_0x25F90() {
     int x = state.getDX();
@@ -385,9 +385,9 @@ public class VgaDriver extends JavaOverrideHelper {
     // No jump, 30 instructions 67 lines in ghidra
     // warning: we dont set registers at the end but no idea if their values are used or not.
     setDiFromXYCordsDxBx_0x2538_0xC10_0x25F90();
-    int baseAddressDi = state.getDI();
-    int sourceAddress = MemoryUtils.toPhysicalAddress(state.getDS(), baseAddressDi);
-    int destinationAddress = MemoryUtils.toPhysicalAddress(state.getES(), baseAddressDi);
+    int baseOffsetDi = state.getDI();
+    int sourceAddress = MemoryUtils.toPhysicalAddress(state.getDS(), baseOffsetDi);
+    int destinationAddress = MemoryUtils.toPhysicalAddress(state.getES(), baseOffsetDi);
     int rowCount = state.getBP();
     int columnCount = state.getAX();
     LOGGER.debug(
