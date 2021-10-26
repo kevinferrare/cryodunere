@@ -18,19 +18,19 @@ import spice86.utils.ConvertUtils;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class VgaDriver extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(VgaDriver.class);
+public class VgaDriverCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VgaDriverCode.class);
   private static final String MEMCPY_DS_TO_ES_FOR64000 = "memcpyDSToESFor64000";
   private static final int IMAGE_UNDER_MOUSE_CURSOR_START = 0xFA00;
 
   private int baseSegment;
-  private VgaDriverGlobals vgaDriverGlobals;
+  private VgaDriverGlobals globals;
 
-  public VgaDriver(Map<SegmentedAddress, FunctionInformation> functionInformations, int programStartSegment,
+  public VgaDriverCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int programStartSegment,
       Machine machine) {
     super(functionInformations, "vgaDriver", machine);
     baseSegment = programStartSegment + 0x234B;
-    vgaDriverGlobals = new VgaDriverGlobals(machine.getMemory(), baseSegment * 0x10);
+    globals = new VgaDriverGlobals(machine.getMemory(), baseSegment * 0x10);
     defineFunction(baseSegment, 0x103, "unknownInitAxCxBp", this::unknownInitAxCxBp_0x2538_0x103_0x25483);
     defineFunction(baseSegment, 0x10C, "restoreImageUnderMouseCursor",
         this::restoreImageUnderMouseCursor_0x2538_0x10C_0x2548C);
@@ -89,9 +89,9 @@ public class VgaDriver extends JavaOverrideHelper {
    */
   public Runnable restoreImageUnderMouseCursor_0x2538_0x10C_0x2548C() {
     // 26CC0
-    int mouseCursorAddressInVram = this.vgaDriverGlobals.getMouseCursorAddressInVram018A();
-    int columns = this.vgaDriverGlobals.getColumnsOfMouseCursorCount018C();
-    int lines = this.vgaDriverGlobals.getLinesOfMouseCursorCount018E();
+    int mouseCursorAddressInVram = this.globals.getMouseCursorAddressInVram018A();
+    int columns = this.globals.getColumnsOfMouseCursorCount018C();
+    int lines = this.globals.getLinesOfMouseCursorCount018E();
     LOGGER.debug(
         "restoreImageUnderMouseCursor mouseCursorAddressInVram:{},columns:{},lines:{}",
         mouseCursorAddressInVram, columns, lines);
@@ -176,9 +176,9 @@ public class VgaDriver extends JavaOverrideHelper {
   public Runnable updateVgaOffset01A3FromLineNumberAsAx_0x2538_0x163_0x254E3() {
     // 25F86
     int lineNumber = state.getAX();
-    this.vgaDriverGlobals.setVgaOffset01A3(lineNumber * 320);
+    this.globals.setVgaOffset01A3(lineNumber * 320);
     LOGGER.debug("updateVgaOffset01A3FromLineNumberAsAx lineNumber:{},vgaOffset01A3:{}", lineNumber,
-        vgaDriverGlobals.getVgaOffset01A3());
+        globals.getVgaOffset01A3());
     return farRet();
   }
 
@@ -302,7 +302,7 @@ public class VgaDriver extends JavaOverrideHelper {
       int baseAddress = MemoryUtils.toPhysicalAddress(state.getES(), state.getDX());
       int writeIndex = state.getBL();
       int numberOfColors = state.getCX();
-      int loadMode = vgaDriverGlobals.getPaletteLoadMode01BD();
+      int loadMode = globals.getPaletteLoadMode01BD();
       LOGGER.debug("loadPaletteInVgaDac, baseAddress:{}, writeIndex:{}, loadMode:{}, numberOfColors:{}", baseAddress,
           writeIndex, loadMode, numberOfColors);
       vgaCard.setVgaWriteIndex(writeIndex);
@@ -344,7 +344,7 @@ public class VgaDriver extends JavaOverrideHelper {
   private Runnable setDiFromXYCordsDxBx_0x2538_0xC10_0x25F90() {
     int x = state.getDX();
     int y = state.getBX();
-    int offset = vgaDriverGlobals.getVgaOffset01A3();
+    int offset = globals.getVgaOffset01A3();
     if (y >= 200) {
       y = 199;
     }
@@ -417,12 +417,12 @@ public class VgaDriver extends JavaOverrideHelper {
    */
   public Runnable unknownGlobeInitRelated_0x2538_0x1D5A_0x270DA() {
     // no jump
-    vgaDriverGlobals.setUnknownGlobeRelated1CA6(state.getDI());
-    vgaDriverGlobals.setUnknownGlobeRelated1EA6(0xFEDD);
-    vgaDriverGlobals.setUnknownGlobeRelated1F29(0xFE5A);
-    vgaDriverGlobals.setUnknownGlobeRelated1CAE(0x6360 - 1);
-    vgaDriverGlobals.setUnknownGlobeRelated1CB0(0x6360);
-    vgaDriverGlobals.setUnknownGlobeRelated1CB2(0x6360);
+    globals.setUnknownGlobeRelated1CA6(state.getDI());
+    globals.setUnknownGlobeRelated1EA6(0xFEDD);
+    globals.setUnknownGlobeRelated1F29(0xFE5A);
+    globals.setUnknownGlobeRelated1CAE(0x6360 - 1);
+    globals.setUnknownGlobeRelated1CB0(0x6360);
+    globals.setUnknownGlobeRelated1CB2(0x6360);
     state.setDS(state.getSS());
     state.setCarryFlag(true);
     return farRet();

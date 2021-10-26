@@ -5,7 +5,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cryodunere.vgadriver.VgaDriver;
+import cryodunere.vgadriver.VgaDriverCode;
+import spice86.emulator.cpu.SegmentRegisters;
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.SegmentedAddress;
@@ -13,16 +14,17 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class Display extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Display.class);
-  private VgaDriver vgaDriver;
-  private DisplayGlobalsOnDs globalsOnDs;
+public class DisplayCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DisplayCode.class);
+  private VgaDriverCode vgaDriver;
+  private DisplayGlobalsOnDs globals;
 
-  public Display(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine,
-      VgaDriver vgaDriver) {
+  public DisplayCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine,
+      VgaDriverCode vgaDriver) {
     super(functionInformations, "display", machine);
     this.vgaDriver = vgaDriver;
-    globalsOnDs = new DisplayGlobalsOnDs(machine);
+    globals = new DisplayGlobalsOnDs(machine);
+    defineFunction(segment, 0x0579, "clearVgaOffset01A3F", this::clearVgaOffset01A3F_0x1ED_0x579_0x2449);
     defineFunction(segment, 0x98F5, "clearUnknownValuesAndAX", this::clearUnknownValuesAndAX_0x1ED_0x98F5_0xB7C5);
     defineFunction(segment, 0xC07C, "setVideoBufferSegmentDBD6", this::setVideoBufferSegmentDBD6_0x1ED_0xC07C_0xDF4C);
     defineFunction(segment, 0xC085, "setDialogueVideoBufferSegmentDC32",
@@ -38,47 +40,56 @@ public class Display extends JavaOverrideHelper {
     defineFunction(segment, 0xE283, "popAll", this::popAll_0x1ED_0xE283_0x10153);
   }
 
+  // sets the gfx offset to 0
+  public Runnable clearVgaOffset01A3F_0x1ED_0x579_0x2449() {
+    LOGGER.debug("Clearing VGA offset");
+    checkVtableContainsExpected(SegmentRegisters.DS_INDEX, 0x3939, vgaDriver.getBaseSegment(), 0x163);
+    state.setAX(0);
+    vgaDriver.updateVgaOffset01A3FromLineNumberAsAx_0x2538_0x163_0x254E3();
+    return nearRet();
+  }
+
   public Runnable clearUnknownValuesAndAX_0x1ED_0x98F5_0xB7C5() {
     // Called after screen change (video, room, dialogue, map ...).
     // When set to 255, cannot enter orni and enter palace instead
-    LOGGER.debug("Before: 1C06:{}, 1BF8:{}, 1BEA:{}", globalsOnDs.get1C06(), globalsOnDs.get1BF8(),
-        globalsOnDs.get1BEA());
-    globalsOnDs.set1C06(0);
+    LOGGER.debug("Before: 1C06:{}, 1BF8:{}, 1BEA:{}", globals.get1C06(), globals.get1BF8(),
+        globals.get1BEA());
+    globals.set1C06(0);
     // 128 after end of dialogue if character is in the room
-    globalsOnDs.set1BF8(0);
+    globals.set1BF8(0);
     // 128 after end of dialogue
-    globalsOnDs.set1BEA(0);
+    globals.set1BEA(0);
     // If not done, book videos will show a character on screen instead
     state.setAX(0);
     return nearRet();
   }
 
   public Runnable setVideoBufferSegmentDBD6_0x1ED_0xC07C_0xDF4C() {
-    int value = globalsOnDs.getBufferSegmentDBD6();
+    int value = globals.getBufferSegmentDBD6();
     return setVideoBuffer(value, "setVideoBufferSegmentDBD6");
   }
 
   public Runnable setDialogueVideoBufferSegmentDC32_0x1ED_0xC085_0xDF55() {
-    int value = globalsOnDs.getBufferSegmentDialogueDC32();
+    int value = globals.getBufferSegmentDialogueDC32();
     return setVideoBuffer(value, "setDialogueVideoBufferSegmentDC32");
   }
 
   public Runnable setTextVideoBufferSegmentDBD8_0x1ED_0xC08E_0xDF5E() {
-    int value = globalsOnDs.getBufferSegmentDBD8();
+    int value = globals.getBufferSegmentDBD8();
     return setVideoBuffer(value, "setTextVideoBufferSegmentDBD8");
   }
 
   private Runnable setVideoBuffer(int value, String functionName) {
-    int oldValue = globalsOnDs.getCurentVideoBufferSegmentDBDA();
+    int oldValue = globals.getCurentVideoBufferSegmentDBDA();
     if (value != oldValue) {
-      globalsOnDs.setCurrentVideoBufferSegmentDBDA(value);
+      globals.setCurrentVideoBufferSegmentDBDA(value);
       LOGGER.debug("{} value:{}, oldValue:{}", functionName, value, oldValue);
     }
     return nearRet();
   }
 
   public Runnable clearCurrentVideoBuffer_0x1ED_0xC0AD_0xDF7D() {
-    state.setES(globalsOnDs.getCurentVideoBufferSegmentDBDA());
+    state.setES(globals.getCurentVideoBufferSegmentDBDA());
     vgaDriver.fillWithZeroFor64000AtES_0x2538_0x118_0x25498();
     return nearRet();
   }
@@ -92,8 +103,8 @@ public class Display extends JavaOverrideHelper {
    * </ul>
    */
   public Runnable getCharacterCoordsXY_0x1ED_0xD05F_0xEF2F() {
-    int x = globalsOnDs.getCharacterXCoordD82C();
-    int y = globalsOnDs.getCharacterYCoordD82E();
+    int x = globals.getCharacterXCoordD82C();
+    int y = globals.getCharacterYCoordD82E();
     state.setDX(x);
     state.setBX(y);
     LOGGER.debug("getCharacterCoordsXY x:{} y:{}", state.getDX(), state.getBX());
@@ -102,22 +113,22 @@ public class Display extends JavaOverrideHelper {
 
   // intro and map fonts
   public Runnable setFontToIntro_0x1ED_0xD068_0xEF38() {
-    globalsOnDs.setFontRelated2518(0xD096);
-    globalsOnDs.set47A0(0xCEEC);
+    globals.setFontRelated2518(0xD096);
+    globals.set47A0(0xCEEC);
     return nearRet();
   }
 
   // menu fonts related
   public Runnable setFontToMenu_0x1ED_0xD075_0xEF45() {
-    globalsOnDs.setFontRelated2518(0xD12F);
-    globalsOnDs.set47A0(0xCF6C);
+    globals.setFontRelated2518(0xD12F);
+    globals.set47A0(0xCF6C);
     return nearRet();
   }
 
   // book fonts related
   public Runnable setFontToBook_0x1ED_0xD082_0xEF52() {
-    globalsOnDs.setFontRelated2518(0xD0FF);
-    globalsOnDs.set47A0(0xCEEC);
+    globals.setFontRelated2518(0xD0FF);
+    globals.set47A0(0xCEEC);
     return nearRet();
   }
 

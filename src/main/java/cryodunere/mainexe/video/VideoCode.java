@@ -13,20 +13,20 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class Video extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Video.class);
-  private VideoGlobalsOnDs globalsOnDs;
+public class VideoCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VideoCode.class);
+  private VideoGlobalsOnDs globals;
 
-  public Video(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
-    super(functionInformations, "scriptedScene", machine);
-    this.globalsOnDs = new VideoGlobalsOnDs(machine);
+  public VideoCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
+    super(functionInformations, "video", machine);
+    this.globals = new VideoGlobalsOnDs(machine);
     defineFunction(segment, 0xC921, "read33A3WithAxOffset", this::read33A3WithAxOffset_0x1ED_0xC921_0xE7F1);
     defineFunction(segment, 0xCA59, "videoPlayRelated", this::videoPlayRelated_0x1ED_0xCA59_0xE929);
     defineFunction(segment, 0xCC85, "isLastFrame", this::isLastFrame_0x1ED_0xCC85_0xEB55);
   }
 
   public Runnable isLastFrame_0x1ED_0xCC85_0xEB55() {
-    int value = globalsOnDs.getDBE7();
+    int value = globals.getDBE7();
     LOGGER.debug("DBE7={}", value);
     state.setZeroFlag(value == 0 || value == 1);
     return nearRet();
@@ -47,8 +47,8 @@ public class Video extends JavaOverrideHelper {
 
   public Runnable videoPlayRelated_0x1ED_0xCA59_0xE929() {
     // seems to have no impact what so ever is done here. Only executed during videos
-    int value = globalsOnDs.getCE7AVideoPlayRelatedIndex();
-    globalsOnDs.setDC22VideoPlayRelatedIndex(value);
+    int value = globals.getCE7AVideoPlayRelatedIndex();
+    globals.setDC22VideoPlayRelatedIndex(value);
     LOGGER.debug("videoPlayRelated value:{}", value);
     return nearRet();
   }

@@ -13,13 +13,13 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class ScriptedScene extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptedScene.class);
-  private IntroGlobalsOnDs globalsOnDs;
+public class ScriptedSceneCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScriptedSceneCode.class);
+  private ScriptedSceneGlobalsOnDs globals;
 
-  public ScriptedScene(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
+  public ScriptedSceneCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
     super(functionInformations, "scriptedScene", machine);
-    globalsOnDs = new IntroGlobalsOnDs(machine);
+    globals = new ScriptedSceneGlobalsOnDs(machine);
     defineFunction(segment, 0x93F, "loadAXFromCSUnknownOffset4854AndAdvanceSIAndOffset",
         this::loadSceneSequenceDataIntoAXAndAdvanceSI_0x1ED_0x93F_0x280F);
     defineFunction(segment, 0x945, "setUnknownOffset4854ToSi", this::setSceneSequenceOffsetToSi_0x1ED_0x945_0x2815);
@@ -31,7 +31,7 @@ public class ScriptedScene extends JavaOverrideHelper {
    * Input: SI Output: SI, AX. AX seems to
    */
   public Runnable loadSceneSequenceDataIntoAXAndAdvanceSI_0x1ED_0x93F_0x280F() {
-    int offset = globalsOnDs.getSceneSequenceOffset4854();
+    int offset = globals.getSceneSequenceOffset4854();
     int address = MemoryUtils.toPhysicalAddress(state.getCS(), offset);
     int value = memory.getUint16(address);
     state.setAX(value);
@@ -39,7 +39,7 @@ public class ScriptedScene extends JavaOverrideHelper {
     // point to next value
     state.setSI(offset + 2);
     // in asm this is done by continuing to setUnknownOffset4854ToSi_0x1ED_0x945_0x2815
-    globalsOnDs.setSceneSequenceOffset4854(state.getSI());
+    globals.setSceneSequenceOffset4854(state.getSI());
     return nearRet();
   }
 
@@ -50,7 +50,7 @@ public class ScriptedScene extends JavaOverrideHelper {
   public Runnable setSceneSequenceOffsetToSi_0x1ED_0x945_0x2815() {
     int offset = state.getSI();
     LOGGER.debug("setUnknownOffset4854ToSi: offset:{}", offset);
-    globalsOnDs.setSceneSequenceOffset4854(offset);
+    globals.setSceneSequenceOffset4854(offset);
     return nearRet();
   }
 }

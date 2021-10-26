@@ -1,12 +1,10 @@
-package cryodunere.mainexe;
+package cryodunere.mainexe.time;
 
 import spice86.emulator.machine.Machine;
 import spice86.emulator.reverseengineer.MemoryBasedDataStructureWithDsBaseAddress;
 
-public class MainGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress {
-  public static final int VGA_CALL_TABLE_START = 0x38B5;
-
-  public MainGlobalsOnDs(Machine machine) {
+public class TimeGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress {
+  public TimeGlobalsOnDs(Machine machine) {
     super(machine);
   }
 
@@ -29,29 +27,5 @@ public class MainGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress {
    */
   public int get0002HourOfTheDay() {
     return get0002GameElapsedTime() & 0xF;
-  }
-
-  public void set11CAUnknown(int value) {
-    this.setUint8(0x11CA, value);
-  }
-
-  public void set2788Unknown(int value) {
-    this.setUint8(0x2788, value);
-  }
-
-  public int getDC2BUnknown() {
-    return this.getUint8(0xDC2B);
-  }
-
-  public int getDBC8Unknown() {
-    return this.getUint16(0xDBC8);
-  }
-
-  public int get39B9() {
-    return this.getUint16(0x39B9);
-  }
-
-  public int getCE68() {
-    return this.getUint16(0xCE68);
   }
 }

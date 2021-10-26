@@ -3,16 +3,19 @@ package cryodunere;
 import java.util.HashMap;
 import java.util.Map;
 
-import cryodunere.mainexe.MainCode;
-import cryodunere.mainexe.dialogues.Dialogues;
-import cryodunere.mainexe.display.Display;
-import cryodunere.mainexe.init.Init;
-import cryodunere.mainexe.map.MapRelated;
-import cryodunere.mainexe.menu.Menu;
-import cryodunere.mainexe.scriptedscene.ScriptedScene;
-import cryodunere.mainexe.video.Video;
-import cryodunere.sound.SoundDriver;
-import cryodunere.vgadriver.VgaDriver;
+import cryodunere.mainexe.UnknownCode;
+import cryodunere.mainexe.dialogues.DialoguesCode;
+import cryodunere.mainexe.disk.DiskCode;
+import cryodunere.mainexe.display.DisplayCode;
+import cryodunere.mainexe.init.InitCode;
+import cryodunere.mainexe.map.MapCode;
+import cryodunere.mainexe.menu.MenuCode;
+import cryodunere.mainexe.scriptedscene.ScriptedSceneCode;
+import cryodunere.mainexe.sound.SoundCode;
+import cryodunere.mainexe.time.TimeCode;
+import cryodunere.mainexe.video.VideoCode;
+import cryodunere.sound.SoundDriverCode;
+import cryodunere.vgadriver.VgaDriverCode;
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.function.OverrideSupplier;
 import spice86.emulator.machine.Machine;
@@ -28,16 +31,19 @@ public class DuneCdOverrideSupplier implements OverrideSupplier {
   public Map<SegmentedAddress, FunctionInformation> generateFunctionInformations(int programStartSegment,
       Machine machine) {
     Map<SegmentedAddress, FunctionInformation> res = new HashMap<>();
-    SoundDriver soundDriver = new SoundDriver(res, programStartSegment, machine);
-    VgaDriver vgaDriver = new VgaDriver(res, programStartSegment, machine);
-    new MainCode(res, programStartSegment, machine, vgaDriver, soundDriver);
-    new Menu(res, programStartSegment, machine);
-    new ScriptedScene(res, programStartSegment, machine);
-    new MapRelated(res, programStartSegment, machine);
-    new Dialogues(res, programStartSegment, machine);
-    new Display(res, programStartSegment, machine, vgaDriver);
-    new Video(res, programStartSegment, machine);
-    new Init(res, programStartSegment, machine);
+    SoundDriverCode soundDriver = new SoundDriverCode(res, programStartSegment, machine);
+    VgaDriverCode vgaDriver = new VgaDriverCode(res, programStartSegment, machine);
+    new UnknownCode(res, programStartSegment, machine);
+    new MenuCode(res, programStartSegment, machine);
+    new ScriptedSceneCode(res, programStartSegment, machine);
+    new MapCode(res, programStartSegment, machine);
+    new DialoguesCode(res, programStartSegment, machine);
+    new DisplayCode(res, programStartSegment, machine, vgaDriver);
+    new VideoCode(res, programStartSegment, machine);
+    new InitCode(res, programStartSegment, machine);
+    new DiskCode(res, programStartSegment, machine);
+    new TimeCode(res, programStartSegment, machine);
+    new SoundCode(res, programStartSegment, machine, soundDriver);
     return res;
   }
 

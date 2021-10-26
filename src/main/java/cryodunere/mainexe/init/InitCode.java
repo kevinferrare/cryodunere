@@ -12,20 +12,20 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class Init extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Init.class);
+public class InitCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(InitCode.class);
 
-  private InitGlobalsOnDs globalsOnDs;
+  private InitGlobalsOnDs globals;
 
-  public Init(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
+  public InitCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
     super(functionInformations, "initRelated", machine);
-    globalsOnDs = new InitGlobalsOnDs(machine);
+    globals = new InitGlobalsOnDs(machine);
     defineFunction(segment, 0xDA53, "vgaInitRelated", this::vgaInitRelated_0x1ED_0xDA53_0xF923);
   }
 
   public Runnable vgaInitRelated_0x1ED_0xDA53_0xF923() {
-    this.globalsOnDs.setDC6A(0);
-    this.globalsOnDs.set46D7(0);
+    this.globals.setDC6A(0);
+    this.globals.set46D7(0);
     return nearRet();
   }
 }

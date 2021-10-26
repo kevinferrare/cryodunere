@@ -3,8 +3,8 @@ package cryodunere.mainexe.scriptedscene;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.reverseengineer.MemoryBasedDataStructureWithDsBaseAddress;
 
-public class IntroGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress {
-  public IntroGlobalsOnDs(Machine machine) {
+public class ScriptedSceneGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress {
+  public ScriptedSceneGlobalsOnDs(Machine machine) {
     super(machine);
   }
 

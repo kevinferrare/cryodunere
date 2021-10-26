@@ -12,14 +12,14 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class Dialogues extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Dialogues.class);
+public class DialoguesCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DialoguesCode.class);
 
-  private DialoguesGlobalsOnDs globalsOnDs;
+  private DialoguesGlobalsOnDs globals;
 
-  public Dialogues(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
+  public DialoguesCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
     super(functionInformations, "dialogues", machine);
-    globalsOnDs = new DialoguesGlobalsOnDs(machine);
+    globals = new DialoguesGlobalsOnDs(machine);
 
     defineFunction(segment, 0xA1E8, "incUnknown47A8", this::incUnknown47A8_0x1ED_0xA1E8_0xC0B8);
     defineFunction(segment, 0xA8B1, "unknown", this::unknown_0x1ED_0xA8B1_0xC781);
@@ -27,15 +27,15 @@ public class Dialogues extends JavaOverrideHelper {
   }
 
   public Runnable initDialogue_0x1ED_0xC85B_0xE72B() {
-    int value = this.globalsOnDs.getCE7A();
-    this.globalsOnDs.set476E(value);
-    this.globalsOnDs.setTimeBetweenFaceZooms4772(0x1770);
+    int value = this.globals.getCE7A();
+    this.globals.set476E(value);
+    this.globals.setTimeBetweenFaceZooms4772(0x1770);
     return nearRet();
   }
 
   public Runnable incUnknown47A8_0x1ED_0xA1E8_0xC0B8() {
     // Called in dialogues, sometimes before first text display, sometimes before last text
-    globalsOnDs.set47A8(globalsOnDs.get47A8() + 1);
+    globals.set47A8(globals.get47A8() + 1);
     return nearRet();
   }
 

@@ -12,8 +12,8 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class Menu extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Menu.class);
+public class MenuCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MenuCode.class);
 
   // values I could find for MenuGlobalsOnDs.getMenuType, not sure they are not an address to something else.
   public static final int MENU_TYPE_WALK_AROUND = 0x1F0E;
@@ -33,11 +33,11 @@ public class Menu extends JavaOverrideHelper {
   public static final int MENU_TYPE_SELECT_TROOP_OCCUPATION = 0x215A;
   public static final int MENU_TYPE_CHANGE_TROOP_OCCUPATION = 0x216E;
 
-  private MenuGlobalsOnDs globalsOnDs;
+  private MenuGlobalsOnDs globals;
 
-  public Menu(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
+  public MenuCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
     super(functionInformations, "mainCode", machine);
-    globalsOnDs = new MenuGlobalsOnDs(machine);
+    globals = new MenuGlobalsOnDs(machine);
 
     defineFunction(segment, 0xD316, "menuAnimationRelated", this::menuAnimationRelated_0x1ED_0xD316_0xF1E6);
     defineFunction(segment, 0xD41B, "setBpToCurrentMenuTypeForScreenAction",
@@ -46,12 +46,12 @@ public class Menu extends JavaOverrideHelper {
 
   public Runnable menuAnimationRelated_0x1ED_0xD316_0xF1E6() {
     // called when a menu has a submenu
-    int isAnimateMenuUneeded = globalsOnDs.getIsAnimateMenuUnneeded35A6();
-    int value2 = globalsOnDs.getBitmaskDCE6();
+    int isAnimateMenuUneeded = globals.getIsAnimateMenuUnneeded35A6();
+    int value2 = globals.getBitmaskDCE6();
     LOGGER.debug("isAnimateMenuUneeded={},DCE6={}", isAnimateMenuUneeded, value2);
     if (isAnimateMenuUneeded == 0) {
       value2 |= 1;
-      globalsOnDs.setBitmaskDCE6(value2);
+      globals.setBitmaskDCE6(value2);
     }
     return nearRet();
   }
@@ -62,7 +62,7 @@ public class Menu extends JavaOverrideHelper {
       failAsUntested(
           "Was implemented considering base address is DS since I couldnt see a case where DS!=SS for this method, but you found one :)");
     }
-    int value = globalsOnDs.getMenuType();
+    int value = globals.getMenuType();
     state.setBP(value);
     return nearRet();
   }

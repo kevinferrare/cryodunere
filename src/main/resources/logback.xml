@@ -10,6 +10,8 @@
     <appender-ref ref="STDOUT"/>
   </root>
   <logger name="cryodunere" level="INFO"/>
+    <!-- Display file IO and other DOS interactions -->
+  <logger name="spice86.emulator.interrupthandlers.dos" level="WARN"/>
   <!-- A few logs at load time -->
   <logger name="spice86.emulator.loadablefile" level="INFO"/>
   <!-- Display help -->

@@ -12,13 +12,13 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
-public class SoundDriver extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SoundDriver.class);
+public class SoundDriverCode extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SoundDriverCode.class);
   private static final String CLEAR_AL = "clearAL";
   private int baseSegment1;
   private int baseSegment2;
 
-  public SoundDriver(Map<SegmentedAddress, FunctionInformation> functionInformations, int programStartSegment,
+  public SoundDriverCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int programStartSegment,
       Machine machine) {
     super(functionInformations, "soundDriverPcSpeaker", machine);
 
@@ -51,17 +51,17 @@ public class SoundDriver extends JavaOverrideHelper {
     return baseSegment2;
   }
 
-  private Runnable pcSpeakerActivationWithBXAndALCleanup_0x4822_0x100_0x48320() {
+  public Runnable pcSpeakerActivationWithBXAndALCleanup_0x4822_0x100_0x48320() {
     pcSpeakerActivationWithALCleanup_0x4822_0x182_0x483A2();
     state.setBX(0);
     return farRet();
   }
 
-  private Runnable clearAL_0x4822_0x103_0x48323() {
+  public Runnable clearAL_0x4822_0x103_0x48323() {
     return soundUnsupportedFarRet();
   }
 
-  private Runnable clearAL_0x4822_0x109_0x48329() {
+  public Runnable clearAL_0x4822_0x109_0x48329() {
     return soundUnsupportedFarRet();
   }
 
@@ -69,43 +69,43 @@ public class SoundDriver extends JavaOverrideHelper {
     return soundUnsupportedFarRet();
   }
 
-  private Runnable clearAL_0x4822_0x115_0x48335() {
+  public Runnable clearAL_0x4822_0x115_0x48335() {
     return soundUnsupportedFarRet();
   }
 
-  private Runnable pcSpeakerActivationWithALCleanup_0x4822_0x182_0x483A2() {
+  public Runnable pcSpeakerActivationWithALCleanup_0x4822_0x182_0x483A2() {
     pcSpeakerActivation_0x4822_0x188_0x483A8();
     return soundUnsupportedFarRet();
   }
 
-  private Runnable pcSpeakerActivationWithBXAndALCleanup_0x482B_0x100_0x483B0() {
+  public Runnable pcSpeakerActivationWithBXAndALCleanup_0x482B_0x100_0x483B0() {
     LOGGER.debug("PC Speaker activation with BX and AL cleanup");
     pcSpeakerActivationWithALCleanup_0x482B_0x182_0x48432();
     state.setBX(0);
     return this.farRet();
   }
 
-  private Runnable pcSpeakerActivation_0x4822_0x188_0x483A8() {
+  public Runnable pcSpeakerActivation_0x4822_0x188_0x483A8() {
     LOGGER.debug("Other PC Speaker activation");
     return this.nearRet();
   }
 
-  private Runnable pcSpeakerActivationWithALCleanup_0x482B_0x182_0x48432() {
+  public Runnable pcSpeakerActivationWithALCleanup_0x482B_0x182_0x48432() {
     LOGGER.debug("PC Speaker activation with AL cleanup");
     pcSpeakerActivation_0x482B_0x188_0x48438();
     return soundUnsupportedFarRet();
   }
 
-  private Runnable pcSpeakerActivation_0x482B_0x188_0x48438() {
+  public Runnable pcSpeakerActivation_0x482B_0x188_0x48438() {
     LOGGER.debug("PC Speaker activation");
     return this.nearRet();
   }
 
-  private Runnable clearAL_0x482B_0x106_0x483B6() {
+  public Runnable clearAL_0x482B_0x106_0x483B6() {
     return soundUnsupportedFarRet();
   }
 
-  private Runnable clearAL_0x482B_0x112_0x483C2() {
+  public Runnable clearAL_0x482B_0x112_0x483C2() {
     return soundUnsupportedFarRet();
   }
 
