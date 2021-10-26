@@ -2,6 +2,9 @@ package cryodunere.mainexe.menu;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.SegmentedAddress;
@@ -10,6 +13,8 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
 public class Menu extends JavaOverrideHelper {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Menu.class);
+
   // values I could find for MenuGlobalsOnDs.getMenuType, not sure they are not an address to something else.
   public static final int MENU_TYPE_WALK_AROUND = 0x1F0E;
   public static final int MENU_TYPE_DIALOGUE = 0x1F7E;
@@ -34,8 +39,21 @@ public class Menu extends JavaOverrideHelper {
     super(functionInformations, "mainCode", machine);
     globalsOnDs = new MenuGlobalsOnDs(machine);
 
+    defineFunction(segment, 0xD316, "menuAnimationRelated", this::menuAnimationRelated_0x1ED_0xD316_0xF1E6);
     defineFunction(segment, 0xD41B, "setBpToCurrentMenuTypeForScreenAction",
         this::setBpToCurrentMenuTypeForScreenAction_0x1ED_0xD41B_0xF2EB);
+  }
+
+  public Runnable menuAnimationRelated_0x1ED_0xD316_0xF1E6() {
+    // called when a menu has a submenu
+    int isAnimateMenuUneeded = globalsOnDs.getIsAnimateMenuUnneeded35A6();
+    int value2 = globalsOnDs.getBitmaskDCE6();
+    LOGGER.debug("isAnimateMenuUneeded={},DCE6={}", isAnimateMenuUneeded, value2);
+    if (isAnimateMenuUneeded == 0) {
+      value2 |= 1;
+      globalsOnDs.setBitmaskDCE6(value2);
+    }
+    return nearRet();
   }
 
   public Runnable setBpToCurrentMenuTypeForScreenAction_0x1ED_0xD41B_0xF2EB() {

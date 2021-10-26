@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import cryodunere.sound.SoundDriver;
 import cryodunere.vgadriver.VgaDriver;
 import spice86.emulator.cpu.SegmentRegisters;
@@ -123,7 +124,8 @@ public class MainCode extends JavaOverrideHelper {
   }
 
   /**
-   * Purpose unknown but called all the times and always 0 except when clicking on videos in the book, maybe something related to video frames?<br/>
+   * Purpose unknown but called all the times and always 0 except when clicking on videos in the book, maybe something
+   * related to video frames?<br/>
    * When ZF is forced to false, freezes the game in indoor room moves but not in the desert or in other screens.<br/>
    * Outputs:
    * <ul>

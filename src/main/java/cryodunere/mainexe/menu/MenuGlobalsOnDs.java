@@ -8,6 +8,18 @@ public class MenuGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddress {
     super(machine);
   }
 
+  public int getIsAnimateMenuUnneeded35A6() {
+    return this.getUint16(0x35A6);
+  }
+
+  public int getBitmaskDCE6() {
+    return this.getUint16(0xDCE6);
+  }
+
+  public void setBitmaskDCE6(int value) {
+    this.setUint16(0xDCE6, value);
+  }
+
   public void set21DAOffsetToMenuType(int value) {
     this.setUint16(0x21DA, value);
   }
