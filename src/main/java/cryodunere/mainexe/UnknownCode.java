@@ -5,9 +5,6 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cryodunere.sound.SoundDriverCode;
-import cryodunere.vgadriver.VgaDriverCode;
-import spice86.emulator.cpu.SegmentRegisters;
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.MemoryUtils;
@@ -18,49 +15,62 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 @SuppressWarnings("java:S100")
 public class UnknownCode extends JavaOverrideHelper {
   private static final Logger LOGGER = LoggerFactory.getLogger(UnknownCode.class);
-  private UnknownGlobalsOnDs globalsOnDs;
+  private UnknownGlobalsOnDs globals;
 
   public UnknownCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
     super(functionInformations, "mainCode", machine);
-    globalsOnDs = new UnknownGlobalsOnDs(machine);
+    globals = new UnknownGlobalsOnDs(machine);
     defineFunction(segment, 0x0F66, "noOp", this::noOp_0x1ED_0xF66_0x2E36);
     defineFunction(segment, 0x5B99, "memCopy8BytesDsSIToDsDi", this::memCopy8BytesDsSIToDsDi_0x1ED_0x5B99_0x7A69);
     defineFunction(segment, 0x5BA0, "memCopy8BytesFrom1470ToD83C",
         this::memCopy8BytesFrom1470ToD83C_0x1ED_0x5BA0_0x7A70);
+    defineFunction(segment, 0x5BA8, "memCopy8Bytes", this::memCopy8Bytes_0x1ED_0x5BA8_0x7A78);
+    defineFunction(segment, 0xAEC6, "isUnknownDBC80x100And2943BitmaskNonZero",
+        this::isUnknownDBC80x100And2943BitmaskNonZero_0x1ED_0xAEC6_0xCD96);
     defineFunction(segment, 0xD443, "dispatcherJumpsToBX");
     defineFunction(segment, 0xD454, "dispatcherHelperDeterminesWhereToJump");
     defineFunction(segment, 0x4AC4, "setUnknown11CATo0", this::setUnknown11CATo0_0x1ED_0x4AC4_0x6994);
     defineFunction(segment, 0x4ACA, "setUnknown11CATo1", this::setUnknown11CATo1_0x1ED_0x4ACA_0x699A);
-    defineFunction(segment, 0x5BA8, "memCopy8Bytes", this::memCopy8Bytes_0x1ED_0x5BA8_0x7A78);
     defineFunction(segment, 0xABCC, "isUnknownDC2BZero", this::isUnknownDC2BZero_0x1ED_0xABCC_0xCA9C);
     defineFunction(segment, 0xAE28, "isUnknownDBC80x100", this::isUnknownDBC80x100_0x1ED_0xAE28_0xCCF8);
     defineFunction(segment, 0xB2BE, "setUnknown2788To0", this::setUnknown2788To0_0x1ED_0xB2BE_0xD18E);
     defineFunction(segment, 0xD917, "noOp", this::noOp_0x1ED_0xD917_0xF7E7);
     defineFunction(segment, 0xDB44, "shlDXAndCXByAH", this::shlDXAndCXByAH_0x1ED_0xDB44_0xFA14);
-    defineFunction(segment, 0xE851, "checkUnknown39B9", this::checkUnknown39B9_0x1ED_0xE851_0x10721);
     defineFunction(segment, 0xE26F, "noOp", this::noOp_0x1ED_0xE26F_0x1013F);
-    defineFunction(segment, 0xAEC6, "isUnknownDBC80x100And2943BitmaskNonZero", this::isUnknownDBC80x100And2943BitmaskNonZero_0x1ED_0xAEC6_0xCD96);
+    defineFunction(segment, 0xE75B, "unknownStructCreation", this::unknownStructCreation_0x1ED_0xE75B_0x1062B);
+    defineFunction(segment, 0xE851, "checkUnknown39B9", this::checkUnknown39B9_0x1ED_0xE851_0x10721);
+    defineFunction(segment, 0x98, "addOffsetToArray", this::addOffsetToArray_0x1ED_0x98_0x1F68);
+    defineFunction(segment, 0x3AE9, "fill47F8WithFF", this::fill47F8WithFF_0x1ED_0x3AE9_0x59B9);
   }
 
-  public Runnable isUnknownDBC80x100And2943BitmaskNonZero_0x1ED_0xAEC6_0xCD96() {
-    // Called continuously
-    int value = globalsOnDs.get2943();
-    boolean res = true;
-    if ((value & 0x10) == 0) {
-      isUnknownDBC80x100_0x1ED_0xAE28_0xCCF8();
-      if (!state.getZeroFlag()) {
-        res = false;
-      }
-    }
-    res = true;
-    LOGGER.debug("2943={},res={}", value, res);
-    state.setCarryFlag(res);
-    if (!res) {
-      failAsUntested("isUnknownDBC80x100And2943BitmaskNonZero was called with a true result. value: " + value);
-    }
+  public Runnable fill47F8WithFF_0x1ED_0x3AE9_0x59B9() {
+    // Called when leaving or entering a scene. Does not seem to have any effect on game whatever the value is in this area.
+    int address = MemoryUtils.toPhysicalAddress(state.getDS(), 0x47F8);
+    memory.memset(address, 0xFF, 2 * 0x2E);
     return nearRet();
   }
 
+  /**
+   * Inputs:<br/>
+   * - ES:DI: Points to array size in words.<br/>
+   * - DI: increment value to add to each word of the array (even 1st)
+   * 
+   * @return
+   */
+  public Runnable addOffsetToArray_0x1ED_0x98_0x1F68() {
+    int initialAddress = MemoryUtils.toPhysicalAddress(state.getES(), state.getDI());
+    // wtf
+    int increment = state.getDI();
+    int count = memory.getUint16(initialAddress) / 2;
+    for (int i = 0; i < count; i++) {
+      int value = memory.getUint16(initialAddress + i * 2);
+      value += increment;
+      memory.setUint16(initialAddress + i * 2, value);
+    }
+    // unneeded?
+    state.setDI(state.getDI() + count * 2);
+    return nearRet();
+  }
 
   public Runnable noOp_0x1ED_0xF66_0x2E36() {
     // called before intro
@@ -69,14 +79,14 @@ public class UnknownCode extends JavaOverrideHelper {
 
   public Runnable setUnknown11CATo0_0x1ED_0x4AC4_0x6994() {
     // triggered when orni lifts off and lands
-    globalsOnDs.set11CAUnknown(0);
+    globals.set11CAUnknown(0);
     return nearRet();
   }
 
   public Runnable setUnknown11CATo1_0x1ED_0x4ACA_0x699A() {
     // triggered on orni map, flat map and discussion when displaying new dialogue on click and play screens and in
     // visions
-    globalsOnDs.set11CAUnknown(1);
+    globals.set11CAUnknown(1);
     return nearRet();
   }
 
@@ -119,6 +129,25 @@ public class UnknownCode extends JavaOverrideHelper {
     return memCopy8BytesDsSIToDsDi_0x1ED_0x5B99_0x7A69();
   }
 
+  public Runnable isUnknownDBC80x100And2943BitmaskNonZero_0x1ED_0xAEC6_0xCD96() {
+    // Called continuously
+    int value = globals.get2943();
+    boolean res = true;
+    if ((value & 0x10) == 0) {
+      isUnknownDBC80x100_0x1ED_0xAE28_0xCCF8();
+      if (!state.getZeroFlag()) {
+        res = false;
+      }
+    }
+    res = true;
+    LOGGER.debug("2943={},res={}", value, res);
+    state.setCarryFlag(res);
+    if (!res) {
+      failAsUntested("isUnknownDBC80x100And2943BitmaskNonZero was called with a true result. value: " + value);
+    }
+    return nearRet();
+  }
+
   /**
    * Purpose unknown but called all the times and always 0 except when clicking on videos in the book, maybe something
    * related to video frames?<br/>
@@ -129,13 +158,13 @@ public class UnknownCode extends JavaOverrideHelper {
    * </ul>
    */
   public Runnable isUnknownDC2BZero_0x1ED_0xABCC_0xCA9C() {
-    state.setZeroFlag(globalsOnDs.getDC2BUnknown() == 0);
+    state.setZeroFlag(globals.getDC2BUnknown() == 0);
     return nearRet();
   }
 
   public Runnable isUnknownDBC80x100_0x1ED_0xAE28_0xCCF8() {
     // Called constantly in game and at transitions during video
-    int value = globalsOnDs.getDBC8Unknown();
+    int value = globals.getDBC8Unknown();
     // Seems that this function is called with only JZ / JNZ, but not sure so call the real thing
     cpu.getAlu().sub16(value, 0x100);
     if (value != 0) {
@@ -146,7 +175,7 @@ public class UnknownCode extends JavaOverrideHelper {
 
   public Runnable setUnknown2788To0_0x1ED_0xB2BE_0xD18E() {
     // Called when game is loaded or when landing with orni. Other values do not seem to have any effect.
-    globalsOnDs.set2788Unknown(0);
+    globals.set2788Unknown(0);
     return nearRet();
   }
 
@@ -166,16 +195,37 @@ public class UnknownCode extends JavaOverrideHelper {
     return nearRet();
   }
 
-  public Runnable checkUnknown39B9_0x1ED_0xE851_0x10721() {
-    // Game stops if carry flag is unset
-    int value = globalsOnDs.get39B9();
-    value += 0x2F13;
-    cpu.getAlu().sub16(value, globalsOnDs.getCE68());
+  public Runnable noOp_0x1ED_0xE26F_0x1013F() {
+    // called after or during most screen transitions
     return nearRet();
   }
 
-  public Runnable noOp_0x1ED_0xE26F_0x1013F() {
-    // called after or during most screen transitions
+  /**
+   * Inputs:<br/>
+   * AX,DL to copy at the beginning of the structure<br/>
+   * ES:DI:structure address<br/>
+   * DS:SI+0x10:start of the structure to copy for 8 bytes (but byte#4 is skipped and there is a hole in the destination
+   * as well)<br/>
+   * 
+   * @return
+   */
+  public Runnable unknownStructCreation_0x1ED_0xE75B_0x1062B() {
+    int destinationAddress = MemoryUtils.toPhysicalAddress(state.getES(), state.getDI());
+    memory.setUint16(destinationAddress, state.getAX());
+    memory.setUint8(destinationAddress + 2, state.getDL());
+    int sourceAddress = MemoryUtils.toPhysicalAddress(state.getDS(), state.getSI()) + 0x10;
+    memory.memCopy(sourceAddress, destinationAddress + 3, 3);
+    memory.memCopy(sourceAddress + 4, destinationAddress + 6, 4);
+    // 10 bytes copied in total
+    state.setDI(state.getDI() + 10);
+    return nearRet();
+  }
+
+  public Runnable checkUnknown39B9_0x1ED_0xE851_0x10721() {
+    // Game stops if carry flag is unset
+    int value = globals.get39B9();
+    value += 0x2F13;
+    cpu.getAlu().sub16(value, globals.getCE68());
     return nearRet();
   }
 }

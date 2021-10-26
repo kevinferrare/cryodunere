@@ -31,6 +31,12 @@ public class DuneCdOverrideSupplier implements OverrideSupplier {
   public Map<SegmentedAddress, FunctionInformation> generateFunctionInformations(int programStartSegment,
       Machine machine) {
     Map<SegmentedAddress, FunctionInformation> res = new HashMap<>();
+    createOverrides(programStartSegment, machine, res);
+    return res;
+  }
+
+  private final void createOverrides(int programStartSegment, Machine machine,
+      Map<SegmentedAddress, FunctionInformation> res) {
     SoundDriverCode soundDriver = new SoundDriverCode(res, programStartSegment, machine);
     VgaDriverCode vgaDriver = new VgaDriverCode(res, programStartSegment, machine);
     new UnknownCode(res, programStartSegment, machine);
@@ -44,7 +50,6 @@ public class DuneCdOverrideSupplier implements OverrideSupplier {
     new DiskCode(res, programStartSegment, machine);
     new TimeCode(res, programStartSegment, machine);
     new SoundCode(res, programStartSegment, machine, soundDriver);
-    return res;
   }
 
   @Override
