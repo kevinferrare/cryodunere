@@ -26,6 +26,7 @@ public class DisplayCode extends JavaOverrideHelper {
     globals = new DisplayGlobalsOnDs(machine);
     defineFunction(segment, 0x0579, "clearVgaOffset01A3F", this::clearVgaOffset01A3F_0x1ED_0x579_0x2449);
     defineFunction(segment, 0x98F5, "clearUnknownValuesAndAX", this::clearUnknownValuesAndAX_0x1ED_0x98F5_0xB7C5);
+    defineFunction(segment, 0x9901, "set479ETo0", this::set479ETo0_0x1ED_0x9901_0xB7D1);
     defineFunction(segment, 0xC07C, "setVideoBufferSegmentDBD6", this::setVideoBufferSegmentDBD6_0x1ED_0xC07C_0xDF4C);
     defineFunction(segment, 0xC085, "setDialogueVideoBufferSegmentDC32",
         this::setDialogueVideoBufferSegmentDC32_0x1ED_0xC085_0xDF55);
@@ -61,6 +62,13 @@ public class DisplayCode extends JavaOverrideHelper {
     globals.set1BEA(0);
     // If not done, book videos will show a character on screen instead
     state.setAX(0);
+    return nearRet();
+  }
+
+  public Runnable set479ETo0_0x1ED_0x9901_0xB7D1() {
+    // Called in intro when skipping scenes and in the book when clicking subjects or quitting.
+    // Screen in intro becomes garbled when setting something else than 0.
+    globals.set479E(0);
     return nearRet();
   }
 

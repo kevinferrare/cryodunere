@@ -25,6 +25,7 @@ public class UnknownCode extends JavaOverrideHelper {
     defineFunction(segment, 0x5BA0, "memCopy8BytesFrom1470ToD83C",
         this::memCopy8BytesFrom1470ToD83C_0x1ED_0x5BA0_0x7A70);
     defineFunction(segment, 0x5BA8, "memCopy8Bytes", this::memCopy8Bytes_0x1ED_0x5BA8_0x7A78);
+    defineFunction(segment, 0xAE2F, "isUnknownDBC8And1", this::isUnknownDBC8And1_0x1ED_0xAE2F_0xCCFF);
     defineFunction(segment, 0xAEC6, "isUnknownDBC80x100And2943BitmaskNonZero",
         this::isUnknownDBC80x100And2943BitmaskNonZero_0x1ED_0xAEC6_0xCD96);
     defineFunction(segment, 0xD443, "dispatcherJumpsToBX");
@@ -39,36 +40,36 @@ public class UnknownCode extends JavaOverrideHelper {
     defineFunction(segment, 0xE26F, "noOp", this::noOp_0x1ED_0xE26F_0x1013F);
     defineFunction(segment, 0xE75B, "unknownStructCreation", this::unknownStructCreation_0x1ED_0xE75B_0x1062B);
     defineFunction(segment, 0xE851, "checkUnknown39B9", this::checkUnknown39B9_0x1ED_0xE851_0x10721);
-    defineFunction(segment, 0x98, "addOffsetToArray", this::addOffsetToArray_0x1ED_0x98_0x1F68);
     defineFunction(segment, 0x3AE9, "fill47F8WithFF", this::fill47F8WithFF_0x1ED_0x3AE9_0x59B9);
+    defineFunction(segment, 0xB2B9, "inc2788", this::inc2788_0x1ED_0xB2B9_0xD189);
+    defineFunction(segment, 0xDE4E, "setCEE8To0", this::setCEE8To0_0x1ED_0xDE4E_0xFD1E);
   }
 
-  public Runnable fill47F8WithFF_0x1ED_0x3AE9_0x59B9() {
-    // Called when leaving or entering a scene. Does not seem to have any effect on game whatever the value is in this area.
-    int address = MemoryUtils.toPhysicalAddress(state.getDS(), 0x47F8);
-    memory.memset(address, 0xFF, 2 * 0x2E);
+  public Runnable isUnknownDBC8And1_0x1ED_0xAE2F_0xCCFF() {
+    // Called upon action? in intro / dialogues / ...
+    int value = globals.getDBC8();
+    cpu.getAlu().and16(value, 1);
     return nearRet();
   }
 
-  /**
-   * Inputs:<br/>
-   * - ES:DI: Points to array size in words.<br/>
-   * - DI: increment value to add to each word of the array (even 1st)
-   * 
-   * @return
-   */
-  public Runnable addOffsetToArray_0x1ED_0x98_0x1F68() {
-    int initialAddress = MemoryUtils.toPhysicalAddress(state.getES(), state.getDI());
-    // wtf
-    int increment = state.getDI();
-    int count = memory.getUint16(initialAddress) / 2;
-    for (int i = 0; i < count; i++) {
-      int value = memory.getUint16(initialAddress + i * 2);
-      value += increment;
-      memory.setUint16(initialAddress + i * 2, value);
-    }
-    // unneeded?
-    state.setDI(state.getDI() + count * 2);
+  public Runnable setCEE8To0_0x1ED_0xDE4E_0xFD1E() {
+    // Called when skipping some intro screens
+    globals.setCEE8(0);
+    return nearRet();
+  }
+
+  public Runnable inc2788_0x1ED_0xB2B9_0xD189() {
+    // Called when looking at miror or at book, value seems to be always 0 at call time.
+    int value = globals.get2788();
+    globals.set2788(value + 1);
+    return nearRet();
+  }
+
+  public Runnable fill47F8WithFF_0x1ED_0x3AE9_0x59B9() {
+    // Called when leaving or entering a scene. Does not seem to have any effect on game whatever the value is in this
+    // area.
+    int address = MemoryUtils.toPhysicalAddress(state.getDS(), 0x47F8);
+    memory.memset(address, 0xFF, 2 * 0x2E);
     return nearRet();
   }
 
@@ -139,10 +140,9 @@ public class UnknownCode extends JavaOverrideHelper {
         res = false;
       }
     }
-    res = true;
     LOGGER.debug("2943={},res={}", value, res);
     state.setCarryFlag(res);
-    if (!res) {
+    if (res) {
       failAsUntested("isUnknownDBC80x100And2943BitmaskNonZero was called with a true result. value: " + value);
     }
     return nearRet();
@@ -158,13 +158,13 @@ public class UnknownCode extends JavaOverrideHelper {
    * </ul>
    */
   public Runnable isUnknownDC2BZero_0x1ED_0xABCC_0xCA9C() {
-    state.setZeroFlag(globals.getDC2BUnknown() == 0);
+    state.setZeroFlag(globals.getDC2B() == 0);
     return nearRet();
   }
 
   public Runnable isUnknownDBC80x100_0x1ED_0xAE28_0xCCF8() {
     // Called constantly in game and at transitions during video
-    int value = globals.getDBC8Unknown();
+    int value = globals.getDBC8();
     // Seems that this function is called with only JZ / JNZ, but not sure so call the real thing
     cpu.getAlu().sub16(value, 0x100);
     if (value != 0) {
@@ -175,7 +175,7 @@ public class UnknownCode extends JavaOverrideHelper {
 
   public Runnable setUnknown2788To0_0x1ED_0xB2BE_0xD18E() {
     // Called when game is loaded or when landing with orni. Other values do not seem to have any effect.
-    globals.set2788Unknown(0);
+    globals.set2788(0);
     return nearRet();
   }
 
@@ -206,8 +206,6 @@ public class UnknownCode extends JavaOverrideHelper {
    * ES:DI:structure address<br/>
    * DS:SI+0x10:start of the structure to copy for 8 bytes (but byte#4 is skipped and there is a hole in the destination
    * as well)<br/>
-   * 
-   * @return
    */
   public Runnable unknownStructCreation_0x1ED_0xE75B_0x1062B() {
     int destinationAddress = MemoryUtils.toPhysicalAddress(state.getES(), state.getDI());

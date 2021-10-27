@@ -2,9 +2,6 @@ package cryodunere.mainexe.init;
 
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.SegmentedAddress;
@@ -13,8 +10,6 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
 public class InitCode extends JavaOverrideHelper {
-  private static final Logger LOGGER = LoggerFactory.getLogger(InitCode.class);
-
   private InitGlobalsOnDs globals;
 
   public InitCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {

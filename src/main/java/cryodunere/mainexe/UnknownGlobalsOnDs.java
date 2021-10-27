@@ -14,7 +14,11 @@ public class UnknownGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddres
     this.setUint8(0x11CA, value);
   }
 
-  public void set2788Unknown(int value) {
+  public int get2788() {
+    return getUint8(0x2788);
+  }
+
+  public void set2788(int value) {
     this.setUint8(0x2788, value);
   }
 
@@ -22,11 +26,11 @@ public class UnknownGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddres
     return getUint8(0x2943);
   }
 
-  public int getDC2BUnknown() {
+  public int getDC2B() {
     return this.getUint8(0xDC2B);
   }
 
-  public int getDBC8Unknown() {
+  public int getDBC8() {
     return this.getUint16(0xDBC8);
   }
 
@@ -37,4 +41,13 @@ public class UnknownGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddres
   public int getCE68() {
     return this.getUint16(0xCE68);
   }
+
+  public int getCEE8() {
+    return getUint8(0xCEE8);
+  }
+
+  public void setCEE8(int value) {
+    this.setUint8(0xCEE8, value);
+  }
+
 }

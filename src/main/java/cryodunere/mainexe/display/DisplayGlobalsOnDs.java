@@ -67,4 +67,12 @@ public class DisplayGlobalsOnDs extends MemoryBasedDataStructureWithDsBaseAddres
   public void set1BEA(int value) {
     this.setUint16(0x1BEA, value);
   }
+
+  public int get479E() {
+    return getUint16(0x479E);
+  }
+
+  public void set479E(int value) {
+    this.setUint16(0x479E, value);
+  }
 }

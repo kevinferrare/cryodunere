@@ -5,7 +5,7 @@ import java.util.Map;
 
 import cryodunere.mainexe.UnknownCode;
 import cryodunere.mainexe.dialogues.DialoguesCode;
-import cryodunere.mainexe.disk.DiskCode;
+import cryodunere.mainexe.disk.DatastructuresCode;
 import cryodunere.mainexe.display.DisplayCode;
 import cryodunere.mainexe.init.InitCode;
 import cryodunere.mainexe.map.MapCode;
@@ -20,6 +20,7 @@ import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.function.OverrideSupplier;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.SegmentedAddress;
+import spice86.emulator.reverseengineer.JavaOverrideHelper;
 
 /**
  * Re-implementation of CRYO Dune CD version.<br/>
@@ -37,6 +38,7 @@ public class DuneCdOverrideSupplier implements OverrideSupplier {
 
   private final void createOverrides(int programStartSegment, Machine machine,
       Map<SegmentedAddress, FunctionInformation> res) {
+    new JavaOverrideHelper(res, "providedInterrupts", machine).setProvidedInterruptHandlersAsOverridden();
     SoundDriverCode soundDriver = new SoundDriverCode(res, programStartSegment, machine);
     VgaDriverCode vgaDriver = new VgaDriverCode(res, programStartSegment, machine);
     new UnknownCode(res, programStartSegment, machine);
@@ -47,7 +49,7 @@ public class DuneCdOverrideSupplier implements OverrideSupplier {
     new DisplayCode(res, programStartSegment, machine, vgaDriver);
     new VideoCode(res, programStartSegment, machine);
     new InitCode(res, programStartSegment, machine);
-    new DiskCode(res, programStartSegment, machine);
+    new DatastructuresCode(res, programStartSegment, machine);
     new TimeCode(res, programStartSegment, machine);
     new SoundCode(res, programStartSegment, machine, soundDriver);
   }
