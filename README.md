@@ -17,13 +17,11 @@ Thanks to the hybrid ASM / Java mode provided by [spice86](https://github.com/ke
 The goal is to have more and more logic written in human readable java.
 
 # Running it
-To run it, just run the jar with dune cd exe in parameter:
+To run it, just run the jar with dune CD exe in parameter:
 
 ```
-java -jar cryodunere-1.0.0.jar C:/path/to/dunecd/DNCDPRG.EXE
+java -jar cryodunere-1.24.0.jar  C:/path/to/dunecd/DNCDPRG.EXE
 ```
-
-For now, you can adjust the speed with **--instructionsPerSecond**. Higher values will slow down the game and lower values will speed it up. Default is 5 million)
 
 # Building it
  - Download the code for [spice86](https://github.com/kevinferrare/spice86) and build it:

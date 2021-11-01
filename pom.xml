@@ -76,6 +76,14 @@
                   <mainClass>cryodunere.Main</mainClass>
                 </transformer>
               </transformers>
+              <filters>
+                <filter>
+                  <artifact>com.kevinferrare:spice86</artifact>
+                  <excludes>
+                    <exclude>logback.xml</exclude>
+                  </excludes>
+                </filter>
+              </filters>
             </configuration>
           </execution>
         </executions>
@@ -86,7 +94,7 @@
     <dependency>
       <groupId>com.kevinferrare</groupId>
       <artifactId>spice86</artifactId>
-      <version>1.21.0</version>
+      <version>1.27.0</version>
     </dependency>
   </dependencies>
 </project>
