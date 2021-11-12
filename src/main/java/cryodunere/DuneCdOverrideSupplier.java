@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cryodunere.mainexe.UnknownCode;
+import cryodunere.mainexe.datastructures.DatastructuresCode;
 import cryodunere.mainexe.dialogues.DialoguesCode;
-import cryodunere.mainexe.disk.DatastructuresCode;
 import cryodunere.mainexe.display.DisplayCode;
 import cryodunere.mainexe.init.InitCode;
 import cryodunere.mainexe.map.MapCode;
@@ -13,6 +13,8 @@ import cryodunere.mainexe.menu.MenuCode;
 import cryodunere.mainexe.scriptedscene.ScriptedSceneCode;
 import cryodunere.mainexe.sound.SoundCode;
 import cryodunere.mainexe.time.TimeCode;
+import cryodunere.mainexe.timer.TimerCode;
+import cryodunere.mainexe.video.HnmCode;
 import cryodunere.mainexe.video.VideoCode;
 import cryodunere.sound.SoundDriverCode;
 import cryodunere.vgadriver.VgaDriverCode;
@@ -47,11 +49,14 @@ public class DuneCdOverrideSupplier implements OverrideSupplier {
     new MapCode(res, programStartSegment, machine);
     new DialoguesCode(res, programStartSegment, machine);
     new DisplayCode(res, programStartSegment, machine, vgaDriver);
+    new HnmCode(res, programStartSegment, machine);
     new VideoCode(res, programStartSegment, machine);
     new InitCode(res, programStartSegment, machine);
     new DatastructuresCode(res, programStartSegment, machine);
     new TimeCode(res, programStartSegment, machine);
     new SoundCode(res, programStartSegment, machine, soundDriver);
+    new TimerCode(res, programStartSegment, machine);
+    new StaticDefinitions(res, programStartSegment, machine);
   }
 
   @Override

@@ -2,6 +2,7 @@ package cryodunere.mainexe.dialogues;
 
 import java.util.Map;
 
+import cryodunere.globals.ExtraGlobalsOnDs;
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.SegmentedAddress;
@@ -10,31 +11,31 @@ import spice86.emulator.reverseengineer.JavaOverrideHelper;
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
 public class DialoguesCode extends JavaOverrideHelper {
-  private DialoguesGlobalsOnDs globals;
+  private ExtraGlobalsOnDs globals;
 
   public DialoguesCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
     super(functionInformations, "dialogues", machine);
-    globals = new DialoguesGlobalsOnDs(machine);
+    globals = new ExtraGlobalsOnDs(machine);
 
-    defineFunction(segment, 0xA1E8, "incUnknown47A8", this::incUnknown47A8_0x1ED_0xA1E8_0xC0B8);
-    defineFunction(segment, 0xA8B1, "unknown", this::unknown_0x1ED_0xA8B1_0xC781);
-    defineFunction(segment, 0xC85B, "initDialogue", this::initDialogue_0x1ED_0xC85B_0xE72B);
+    defineFunction(segment, 0xA1E8, "incUnknown47A8", this::incUnknown47A8_1ED_A1E8_C0B8);
+    defineFunction(segment, 0xA8B1, "unknown", this::unknown_1ED_A8B1_C781);
+    defineFunction(segment, 0xC85B, "initDialogue", this::initDialogue_1ED_C85B_E72B);
   }
 
-  public Runnable initDialogue_0x1ED_0xC85B_0xE72B() {
-    int value = this.globals.getCE7A();
-    this.globals.set476E(value);
-    this.globals.setTimeBetweenFaceZooms4772(0x1770);
+  public Runnable initDialogue_1ED_C85B_E72B() {
+    int value = this.globals.get1138_CE7A_Word16_VideoPlayRelatedIndex();
+    this.globals.set1138_476E_Word16(value);
+    this.globals.set1138_4772_Word16_TimeBetweenFaceZooms(0x1770);
     return nearRet();
   }
 
-  public Runnable incUnknown47A8_0x1ED_0xA1E8_0xC0B8() {
+  public Runnable incUnknown47A8_1ED_A1E8_C0B8() {
     // Called in dialogues, sometimes before first text display, sometimes before last text
-    globals.set47A8(globals.get47A8() + 1);
+    globals.set1138_47A8_Byte8(globals.get1138_47A8_Byte8() + 1);
     return nearRet();
   }
 
-  public Runnable unknown_0x1ED_0xA8B1_0xC781() {
+  public Runnable unknown_1ED_A8B1_C781() {
     // Called when a dialogue text changes (beginning and during dialogue), and when entering an orni
     // Value does not seem to have any effect
     int value = state.getAL();

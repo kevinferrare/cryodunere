@@ -5,6 +5,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cryodunere.globals.ExtraGlobalsOnDs;
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.MemoryUtils;
@@ -22,22 +23,22 @@ public class MapCode extends JavaOverrideHelper {
   public static final int CLICK_HANDLER_MOVE_TROOP_MAP = 0x1AAC;
   public static final int CLICK_HANDLER_GLOBE_MAP = 0x2562;
 
-  private MapGlobalsOnDs globals;
+  private ExtraGlobalsOnDs globals;
 
   public MapCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment, Machine machine) {
     super(functionInformations, "map", machine);
-    this.globals = new MapGlobalsOnDs(machine);
+    this.globals = new ExtraGlobalsOnDs(machine);
 
     defineFunction(segment, 0xD95B, "setMapClickHandlerAddressToInGame",
-        this::setMapClickHandlerAddressToInGame_0x1ED_0xD95B_0xF82B);
+        this::setMapClickHandlerAddressToInGame_1ED_D95B_F82B);
     defineFunction(segment, 0xD95E, "setMapClickHandlerAddressFromAx",
-        this::setMapClickHandlerAddressFromAx_0x1ED_0xD95E_0xF82E);
-    defineFunction(segment, 0xDAA3, "initMapCursorTypeDC58To0", this::initMapCursorTypeDC58To0_0x1ED_0xDAA3_0xF973);
-    defineFunction(segment, 0xDAAA, "setSiToMapCursorTypeDC58", this::setSiToMapCursorTypeDC58_0x1ED_0xDAAA_0xF97A);
-    defineFunction(segment, 0x5B96, "unknownMemcopy", this::unknownMemcopy_0x1ED_0x5B96_0x7A66);
+        this::setMapClickHandlerAddressFromAx_1ED_D95E_F82E);
+    defineFunction(segment, 0xDAA3, "initMapCursorTypeDC58To0", this::initMapCursorTypeDC58To0_1ED_DAA3_F973);
+    defineFunction(segment, 0xDAAA, "setSiToMapCursorTypeDC58", this::setSiToMapCursorTypeDC58_1ED_DAAA_F97A);
+    defineFunction(segment, 0x5B96, "unknownMemcopy", this::unknownMemcopy_1ED_5B96_7A66);
   }
 
-  public Runnable unknownMemcopy_0x1ED_0x5B96_0x7A66() {
+  public Runnable unknownMemcopy_1ED_5B96_7A66() {
     // Called on map display / move, data to be copied never seems to change.
     int sourceAddress = MemoryUtils.toPhysicalAddress(state.getDS(), 0x46e3);
     int destinationAddress = MemoryUtils.toPhysicalAddress(state.getDS(), state.getDI());
@@ -45,12 +46,12 @@ public class MapCode extends JavaOverrideHelper {
     return nearRet();
   }
 
-  public Runnable setMapClickHandlerAddressToInGame_0x1ED_0xD95B_0xF82B() {
+  public Runnable setMapClickHandlerAddressToInGame_1ED_D95B_F82B() {
     // called when starting to fly the orni, exiting maps and when switching from intro to game
     // at load time
-    // See setMapClickHandlerAddressFromAx_0x1ED_0xD95E_0xF82E
+    // See setMapClickHandlerAddressFromAx_1ED_D95E_F82E
     state.setAX(CLICK_HANDLER_INGAME);
-    return setMapClickHandlerAddressFromAx_0x1ED_0xD95E_0xF82E();
+    return setMapClickHandlerAddressFromAx_1ED_D95E_F82E();
   }
 
   /**
@@ -68,8 +69,8 @@ public class MapCode extends JavaOverrideHelper {
    * <li>AX: value to set</li>
    * </ul>
    */
-  public Runnable setMapClickHandlerAddressFromAx_0x1ED_0xD95E_0xF82E() {
-    globals.setMapClickHandlerAddress2570(state.getAX());
+  public Runnable setMapClickHandlerAddressFromAx_1ED_D95E_F82E() {
+    globals.set1138_2570_Word16_MapClickHandlerAddress(state.getAX());
 
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("setMapClickHandlerAddressFromAx: DS:{}, AX:{}", ConvertUtils.toHex16(state.getDS()),
@@ -78,19 +79,19 @@ public class MapCode extends JavaOverrideHelper {
     return nearRet();
   }
 
-  public Runnable setSiToMapCursorTypeDC58_0x1ED_0xDAAA_0xF97A() {
+  public Runnable setSiToMapCursorTypeDC58_1ED_DAAA_F97A() {
     // when taking an orni: 0x149C, when loading globe or results: 0x2448
     int value = state.getSI();
     if (LOGGER.isDebugEnabled()) {
       LOGGER.debug("setSiToMapCursorTypeDC58: value:{}", ConvertUtils.toHex16(value));
     }
-    this.globals.setMapCursorTypeDC58(value);
+    this.globals.set1138_DC58_Word16_MapCursorType(value);
     return nearRet();
   }
 
-  public Runnable initMapCursorTypeDC58To0_0x1ED_0xDAA3_0xF973() {
+  public Runnable initMapCursorTypeDC58To0_1ED_DAA3_F973() {
     // when 0 or any other value, map cursor is disabled for globe / orni.
-    this.globals.setMapCursorTypeDC58(0);
+    this.globals.set1138_DC58_Word16_MapCursorType(0);
     return nearRet();
   }
 }

@@ -1,7 +1,8 @@
-package cryodunere.mainexe.disk;
+package cryodunere.mainexe.datastructures;
 
 import java.util.Map;
 
+import cryodunere.globals.ExtraGlobalsOnDs;
 import spice86.emulator.function.FunctionInformation;
 import spice86.emulator.machine.Machine;
 import spice86.emulator.memory.MemoryUtils;
@@ -12,15 +13,15 @@ import spice86.emulator.reverseengineer.Uint16Array;
 // Method names contain _ to separate addresses.
 @SuppressWarnings("java:S100")
 public class DatastructuresCode extends JavaOverrideHelper {
-  private DatastructuresGlobalsOnDs globals;
+  private ExtraGlobalsOnDs globals;
 
   public DatastructuresCode(Map<SegmentedAddress, FunctionInformation> functionInformations, int segment,
       Machine machine) {
     super(functionInformations, "datastructures", machine);
-    globals = new DatastructuresGlobalsOnDs(machine);
-    defineFunction(segment, 0x98, "convertIndexTableToPointerTable",
-        this::convertIndexTableToPointerTable_0x1ED_0x98_0x1F68);
-    defineFunction(segment, 0xC1F4, "getEsSiPointerToUnknown", this::getEsSiPointerToUnknown_0x1ED_0xC1F4_0xE0C4);
+    globals = new ExtraGlobalsOnDs(machine);
+    defineFunction(segment, 0x98, "convertIndexTableToPointerTable/adjust_sub_resource_pointers_ida",
+        this::convertIndexTableToPointerTable_1ED_98_1F68);
+    defineFunction(segment, 0xC1F4, "getEsSiPointerToUnknown", this::getEsSiPointerToUnknown_1ED_C1F4_E0C4);
   }
 
   /**
@@ -38,7 +39,7 @@ public class DatastructuresCode extends JavaOverrideHelper {
    * Use case is probably a data structure with indexes loaded from a file to memory. Those indexes would be transformed
    * to pointers to the actual data with this method.
    */
-  public Runnable convertIndexTableToPointerTable_0x1ED_0x98_0x1F68() {
+  public Runnable convertIndexTableToPointerTable_1ED_98_1F68() {
     int initialAddress = MemoryUtils.toPhysicalAddress(state.getES(), state.getDI());
     // wtf
     int increment = state.getDI();
@@ -50,19 +51,19 @@ public class DatastructuresCode extends JavaOverrideHelper {
 
   /**
    * AX is an index. At this index there is an offset<br/>
-   * offset = tDBB0[ax*2]<br/>
+   * offset = DS:DBB0[AX*2]<br/>
    * Input: AX (index for a word array)<br/>
    * Output: ES:SI<br/>
    * Algorithm:<br/>
    * <code>
-   * ptr = *DBB0
+   * ptr = *DS:DBB0
    * ES:SI = ptr+ptr[ax*2]
    * </code>
    */
-  public Runnable getEsSiPointerToUnknown_0x1ED_0xC1F4_0xE0C4() {
+  public Runnable getEsSiPointerToUnknown_1ED_C1F4_E0C4() {
     // TODO: create a proper data structure with more organized accessors when what this is is known better.
     int index = state.getAX();
-    SegmentedAddress baseAddress = globals.getStructureSegmentedAddressDBB0();
+    SegmentedAddress baseAddress = globals.getPtr1138_DBB0_Dword32_spriteSheetResourcePointer();
     int resOffset = baseAddress.getOffset() + memory.getUint16(baseAddress.toPhysical() + index * 2);
     state.setES(baseAddress.getSegment());
     state.setSI(resOffset);
