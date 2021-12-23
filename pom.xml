@@ -110,7 +110,7 @@
     <dependency>
       <groupId>com.kevinferrare</groupId>
       <artifactId>spice86</artifactId>
-      <version>1.46.0</version>
+      <version>1.47.0</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
