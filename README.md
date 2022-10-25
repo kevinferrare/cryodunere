@@ -1,3 +1,10 @@
+# Project moved
+This is the java version of Spice86. It is not maintained anymore.
+
+We had to rewrite the project in C# to add automated code generation (java doesn't have the goto keyword, making automated ASM translation challenging)
+
+New repo is here: https://github.com/OpenRakis/Cryogenic/
+
 # Cryo dune reverse engineering
 
 Fiddling with [Cryo dune](https://en.wikipedia.org/wiki/Dune_(video_game)) (CD Version) for fun:
